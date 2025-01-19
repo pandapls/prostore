@@ -1,0 +1,59 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Product {
+  // 主键，UUID类型，默认使用PostgreSQL的gen_random_uuid()函数生成
+  id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+
+  // 产品名称
+  name String
+
+  // 产品URL友好的别名，设置为唯一索引
+  slug String @unique(map: "product_slug_idx")
+
+  // 产品分类
+  category String
+
+  // 产品图片数组
+  images String[]
+
+  // 品牌名称
+  brand String
+
+  // 产品描述
+  description String
+
+  // 库存数量
+  stock Int
+
+  // 价格，12位数字，2位小数的Decimal类型
+  price Decimal @default(0) @db.Decimal(12, 2)
+
+  // 评分，3位数字，2位小数的Decimal类型
+  rating Decimal @default(0) @db.Decimal(3, 2)
+
+  // 评论数量
+  numReviews Int @default(0)
+
+  // 是否为特色产品
+  isFeatured Boolean
+
+  // 横幅图片，可选字段
+  banner String?
+
+  // 创建时间，自动设置为当前时间
+  createdAt DateTime @default(now()) @db.Timestamp(6)
+}
