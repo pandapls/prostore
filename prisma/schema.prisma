@@ -5,7 +5,7 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
   previewFeatures = ["driverAdapters"]
 }
 
@@ -56,4 +56,66 @@ model Product {
 
   // 创建时间，自动设置为当前时间
   createdAt DateTime @default(now()) @db.Timestamp(6)
+}
+
+model User {
+  id            String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name          String    @default("ND_NAME")
+  email         String    @unique(map: "user_email_idx")
+  emailVerified DateTime? @db.Timestamp(6)
+  image         String?
+  password      String?
+  role          String    @default("user")
+  address       Json?     @db.Json
+  paymentMethod String?
+  createdAt     DateTime  @default(now()) @db.Timestamp(6)
+  updatedAt     DateTime  @updatedAt
+
+  // 关联字段 - 与Account和Session模型的一对多关系
+  account Account[] // 一个用户可以有多个第三方账号
+  session Session[] // 一个用户可以有多个会话
+}
+
+model Account {
+  // 账号模型 - 用于存储第三方认证账号信息（如Google、Facebook等）
+  userId            String   @db.Uuid
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  createdAt         DateTime @default(now()) @db.Timestamp(6)
+  updatedAt         DateTime @updatedAt
+  // 关联字段 - 与User模型的多对一关系
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // 复合主键：提供商+提供商账号ID
+  @@id([provider, providerAccountId])
+}
+
+model Session {
+  // 会话模型 - 用于管理用户登录会话
+  sessionToken String   @id
+  userId       String   @db.Uuid
+  expires      DateTime @db.Timestamp(6)
+  // 关联字段 - 与User模型的多对一关系
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now()) @db.Timestamp(6)
+  updatedAt DateTime @updatedAt
+}
+
+model VerificationToken {
+  // 验证令牌模型 - 用于邮箱验证流程
+  identifier String
+  token      String
+  expires    DateTime @db.Timestamp(6)
+
+  // 复合唯一索引：确保标识符和令牌的组合是唯一的
+  @@unique([identifier, token])
 }
