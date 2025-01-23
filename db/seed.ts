@@ -6,12 +6,18 @@ import sampleData from './sample-data';
 async function main() {
 	// 创建 Prisma 客户端实例
 	const prisma = new PrismaClient();
-	// 清空现有产品数据
+	// 清空现有的测试数据
 	await prisma.product.deleteMany();
-
+	await prisma.account.deleteMany();
+	await prisma.session.deleteMany();
+	await prisma.verificationToken.deleteMany();
+	await prisma.user.deleteMany();
 	// 批量插入示例数据
 	await prisma.product.createMany({
 		data: sampleData.products,
+	});
+	await prisma.user.createMany({
+		data: sampleData.users,
 	});
 
 	console.log('Database seeded successfully');
