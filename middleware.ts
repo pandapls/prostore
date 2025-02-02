@@ -1,15 +1,4 @@
-import { auth } from '@/auth'
+import NextAuth from 'next-auth';
+import { authConfig } from './auth.config';
 
-export default auth
-
-export const config = {
-    matcher: [
-        '/shipping-address',
-        '/payment-method',
-        '/place-order',
-        '/profile',
-        '/user/:path*',
-        '/order/:path*',
-        '/admin/:path*'
-    ]
-}
+export const { auth: middleware } = NextAuth(authConfig);
