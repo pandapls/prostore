@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { formatNumberWithDecimal } from '../utils';
-const currency = z.string().refine(
+export const currency = z.string().refine(
 	(value) => {
 		// 1. 检查是否为空
 		if (!value) return false;
