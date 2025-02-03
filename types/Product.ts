@@ -7,3 +7,9 @@ export type Product = z.infer<typeof insertProductSchema> & {
 	rating: string;
 	numReviews: number;
 };
+
+
+export enum PRODUCT_FORM_TYPE {
+    create = 'Create',
+    update = 'Update'
+}

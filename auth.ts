@@ -1,9 +1,11 @@
 import { prisma } from '@/db/prisma';
+import { PrismaAdapter } from '@auth/prisma-adapter';
 import NextAuth from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import { cookies } from 'next/headers';
 import { authConfig } from './auth.config';
 import { compare } from './lib/encrypt';
+
 export const config = {
 	pages: {
 		signIn: '/sign-in',
@@ -13,6 +15,7 @@ export const config = {
 		strategy: 'jwt' as const,
 		maxAge: 30 * 24 * 60 * 60, // 30 days
 	},
+	adapter: PrismaAdapter(prisma),
 	providers: [
 		CredentialsProvider({
 			credentials: {

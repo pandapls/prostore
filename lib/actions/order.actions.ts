@@ -2,13 +2,14 @@
 
 import { auth } from '@/auth';
 import { prisma } from '@/db/prisma';
-import { CartItem, PaymentResult } from '@/types';
+import { CartItem,PaymentResult } from '@/types';
+import { Prisma } from '@prisma/client';
 import { revalidatePath } from 'next/cache';
 import { isRedirectError } from 'next/dist/client/components/redirect-error';
 import { PAGE_SIZE } from '../constants';
 import { paypal } from '../paypal';
-import { convertToPlainObject, formatError } from '../utils';
-import { inserOrderSchema, toOrderCreateInput } from '../validators';
+import { convertToPlainObject,formatError } from '../utils';
+import { inserOrderSchema,toOrderCreateInput } from '../validators';
 import { getMyCart } from './cart.actions';
 import { getUserById } from './user.actions';
 
@@ -198,7 +199,7 @@ export async function approvePayPalOrder(
 	}
 }
 
-async function updateOrderToPaid({
+export async function updateOrderToPaid({
 	orderId,
 	paymentResult,
 }: {
@@ -273,6 +274,81 @@ export async function getMyOrders({
 	const dataCount = await prisma.order.count({
 		where: { userId: session.user.id! },
 	});
+
+	return {
+		data,
+		totalPages: Math.ceil(dataCount / limit),
+	};
+}
+
+export type SalesDataType = {
+	month: string; // 月份，格式为 "MM/YY"
+	totalSales: number; // 该月的总销售额
+};
+
+export async function getOrderSummary() {
+	// Get counts for each resource
+	const ordersCount = await prisma.order.count();
+	const productsCount = await prisma.product.count();
+	const usersCount = await prisma.user.count();
+
+	// Calculate the total sales
+	const totalSales = await prisma.order.aggregate({
+		_sum: { totalPrice: true },
+	});
+
+	// Get monthly sales
+
+	const salesDataRaw = await prisma.$queryRaw<
+		Array<{ month: string; totalSales: Prisma.Decimal }>
+	>`
+    SELECT 
+        to_char("createdAt", 'MM/YY') as "month", 
+        sum("totalPrice") as "totalSales" 
+    FROM 
+        "Order" 
+    GROUP BY 
+        to_char("createdAt", 'MM/YY')
+	`;
+	console.log(salesDataRaw, 'salesDataRaw');
+	const salesData: SalesDataType[] = salesDataRaw.map((entry) => ({
+		month: entry.month,
+		totalSales: Number(entry.totalSales), // Convert Decimal to number
+	}));
+
+	// Get latest sales
+	const latestOrders = await prisma.order.findMany({
+		orderBy: { createdAt: 'desc' },
+		include: {
+			user: { select: { name: true } },
+		},
+		take: 6,
+	});
+
+	return {
+		ordersCount,
+		productsCount,
+		usersCount,
+		totalSales,
+		latestOrders,
+		salesData,
+	};
+}
+
+export async function getAllOrders({
+	limit = PAGE_SIZE,
+	page,
+}: {
+	limit?: number;
+	page: number;
+}) {
+	const data = await prisma.order.findMany({
+		orderBy: { createdAt: 'desc' },
+		take: limit,
+		skip: (page - 1) * limit,
+		include: { user: { select: { name: true } } },
+	});
+	const dataCount = await prisma.order.count();
 
 	return {
 		data,

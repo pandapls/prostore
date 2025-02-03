@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { currency } from './insertProductSchema';
+import { currency } from './product';
 
 export const cartItemSchema = z.object({
 	productId: z.string().min(1, 'Product is required'),

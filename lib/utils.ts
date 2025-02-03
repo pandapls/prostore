@@ -18,7 +18,7 @@ export function formatNumberWithDecimal(num: number): string {
 	return decimal ? `${int}.${decimal.padEnd(2, '0')}` : `${int}.00`;
 }
 
-export async function formatError(error: any) {
+export function formatError(error: any): string {
 	if (error.name === 'ZodError') {
 		// Handle Zod error
 		const fieldErrors = Object.keys(error.errors).map(
@@ -130,4 +130,9 @@ export function formUrlQuery({
 		},
 		{ skipNull: true }
 	);
+}
+
+const NUMBER_FORMATTER = new Intl.NumberFormat(['en-US']);
+export function formatNumber(number: number) {
+	return NUMBER_FORMATTER.format(number);
 }

@@ -1,7 +1,7 @@
 import { Prisma } from '@prisma/client';
 import { z } from 'zod';
 import { PAYMENT_METHODS } from '../constants';
-import { currency } from './insertProductSchema';
+import { currency } from './product';
 import { shippingAddressSchema } from './shipping';
 
 export const inserOrderSchema = z.object({
