@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { Prisma,PrismaClient } from '@prisma/client';
 import sampleData from './sample-data';
 /**
  * 全量导入数据脚本
@@ -17,7 +17,7 @@ async function main() {
 		data: sampleData.products,
 	});
 	await prisma.user.createMany({
-		data: sampleData.users,
+		data: sampleData.users as unknown as Prisma.UserCreateInput,
 	});
 
 	console.log('Database seeded successfully');

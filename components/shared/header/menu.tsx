@@ -1,9 +1,15 @@
-import { Sheet, SheetContent, SheetDescription, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-import ModeToggle from './mode-toggle'
-import { Button } from '@/components/ui/button'
-import { EllipsisVertical, ShoppingCart } from 'lucide-react'
+import { Button } from '@/components/ui/button';
+import {
+    Sheet,
+    SheetContent,
+    SheetDescription,
+    SheetTitle,
+    SheetTrigger,
+} from '@/components/ui/sheet';
+import { EllipsisVertical, ShoppingCart } from 'lucide-react';
 import Link from 'next/link';
-import React from 'react'
+import ModeToggle from './mode-toggle';
+import Search from './search';
 import UserButton from './userButton';
 
 const Menu = () => {
@@ -26,6 +32,9 @@ const Menu = () => {
                             <EllipsisVertical />
                         </SheetTrigger>
                         <SheetContent className='flex flex-col items-start'>
+                            <div className='mt-10'>
+                                <Search />
+                            </div>
                             <SheetTitle>
                                 Menu <ModeToggle />
                             </SheetTitle>
@@ -42,7 +51,7 @@ const Menu = () => {
                 </nav>
             </div>
         </>
-    )
-}
+    );
+};
 
-export default Menu
+export default Menu;

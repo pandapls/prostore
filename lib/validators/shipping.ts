@@ -9,3 +9,5 @@ export const shippingAddressSchema = z.object({
 	lat: z.number().optional(),
 	lng: z.number().optional(),
 });
+
+export type shippingAddressFormData = z.infer<typeof shippingAddressSchema>;
