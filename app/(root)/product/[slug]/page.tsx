@@ -1,16 +1,21 @@
-import AddToCart from '@/components/shared/product/addToCart';
+import { auth } from '@/auth';
+import Rating from '@/components/shared/Rating';
 import ProductImages from '@/components/shared/product/ProductImages';
 import ProductPrice from '@/components/shared/product/ProductPrice';
+import AddToCart from '@/components/shared/product/addToCart';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { getMyCart } from '@/lib/actions/cart.actions';
 import { getProductBySlug } from '@/lib/actions/product.actions';
 import { notFound } from 'next/navigation';
+import ReviewList from './reviewList';
 
 const ProductDetailsPage = async (props: {
     params: Promise<{ slug: string }>;
 }) => {
     const { slug } = await props.params;
+    const session = await auth();
+    const userId = session?.user?.id;
     const product = await getProductBySlug(slug);
     if (!product) {
         notFound();
@@ -30,9 +35,8 @@ const ProductDetailsPage = async (props: {
                                 {product.brand} {product.category}
                             </p>
                             <h1 className='h3-bold'>{product.name}</h1>
-                            <p>
-                                {product.rating} of {product.numReviews} Reviews
-                            </p>
+                            <Rating value={Number(product.rating)} />
+                            <p>{product.numReviews} reviews</p>
                             <div className='flex flex-col sm:flex-row sm:items-center gap-3'>
                                 <ProductPrice
                                     value={Number(product.price)}
@@ -81,6 +85,14 @@ const ProductDetailsPage = async (props: {
                         </Card>
                     </div>
                 </div>
+            </section>
+            <section className='mt-10'>
+                <h2 className='h2-bold  mb-5'>Customer Reviews</h2>
+                <ReviewList
+                    productId={product.id}
+                    productSlug={product.slug}
+                    userId={userId || ''}
+                />
             </section>
         </>
     );

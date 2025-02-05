@@ -4,5 +4,6 @@ export * from './order';
 export * from './payment';
 export * from './product';
 export * from './profile';
+export * from './review';
 export * from './shipping';
 export * from './utils';

@@ -3,7 +3,7 @@ import DeleteDialog from '@/components/shared/deleteDialog';
 import Pagination from '@/components/shared/pagination';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { deleteOrder } from '@/lib/actions/admin.order.action';
+import { deleteOrder } from '@/lib/actions/admin.order.actions';
 import { getAllOrders } from '@/lib/actions/order.actions';
 import { formatId, formatDateTime, formatCurrency } from '@/lib/utils';
 import { Metadata } from 'next';

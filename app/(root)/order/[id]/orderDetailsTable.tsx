@@ -14,7 +14,7 @@ import { useToast } from '@/hooks/use-toast';
 import {
     deliverOrder,
     updateOrderToPaidByCOD,
-} from '@/lib/actions/admin.order.action';
+} from '@/lib/actions/admin.order.actions';
 import {
     approvePayPalOrder,
     createPayPalOrder,
